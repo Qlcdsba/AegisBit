@@ -49,11 +49,7 @@ pub fn WafEngine::inspect_payload(
   }
 
   let is_blocked = total_score >= self.score_threshold
-  let sanitized = if is_blocked {
-    "[BLOCKED BY MOONSHIELD WAF]"
-  } else {
-    payload
-  }
+  let sanitized = if is_blocked { "[BLOCKED BY AEGISBIT WAF]" } else { payload }
 
   { is_blocked, total_score, matches, sanitized_payload: sanitized, }
 }

@@ -1,17 +1,18 @@
 ```text
-  __  __                       ____  _     _      _     _ 
- |  \/  | ___   ___  _ __     / ___|| |__ (_) ___| | __| |
- | |\/| |/ _ \ / _ \| '_ \ ___\___ \| '_ \| |/ _ \ |/ _` |
- | |  | | (_) | (_) | | | |_____|__) | | | | |  __/ | (_| |
- |_|  |_|\___/ \___/|_| |_|    |____/|_| |_|_|\___|_|\__,_|
-       -= ☾ M O O N S H I E L D · 月 盾 守 望 ☽ =-
+     _                    _       ____  _ _   
+    / \   ___  __ _  ___ (_)___  | __ )(_) |_ 
+   / _ \ / _ \/ _` |/ _ \| / __| |  _ \| | __|
+  / ___ \  __/ (_| |  __/| \__ \ | |_) | | |_ 
+ /_/   \_\___|\__, |\___|/ |___/ |____/|_|\__|
+              |___/    |__/                   
+     -= ☾ A E G I S B I T · 神 盾 比 特 ☽ =-
    « Wasm-Native Attack Filter & AI Agent Security Guard »
 ```
 
 <div align="center">
 
 [![MoonBit](https://img.shields.io/badge/Language-MoonBit-8A2BE2?style=for-the-badge&logo=webassembly)](https://www.moonbitlang.com)
-[![CI](https://img.shields.io/github/actions/workflow/status/Qlcdsba/moonshield/ci.yml?branch=main&style=for-the-badge&label=Build%20%26%20Test&logo=githubactions)](https://github.com/Qlcdsba/moonshield/actions)
+[![CI](https://img.shields.io/github/actions/workflow/status/Qlcdsba/AegisBit/ci.yml?branch=main&style=for-the-badge&label=Build%20%26%20Test&logo=githubactions)](https://github.com/Qlcdsba/AegisBit/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
 [![Target](https://img.shields.io/badge/Target-Wasm%20%7C%20Native-orange?style=for-the-badge)](https://www.moonbitlang.com)
 
@@ -79,7 +80,7 @@
                                   |
                                   v
                 +-----------------------------------+
-                |     MoonShield Rule Evaluator     |
+                |      AegisBit Rule Evaluator      |
                 |   - Web 基础规则 (SQLi/XSS/SSRF)  |
                 |   - AI 护栏规则 (Prompt/ToolCall) |
                 +-----------------------------------+

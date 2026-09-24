@@ -1,14 +1,15 @@
-// MoonShield CLI Security Inspector Demo
+// AegisBit CLI Security Inspector Demo
 // Demonstrates rule-based HTTP inspection and basic AI Agent guardrail filtering.
 
 ///|
 fn print_banner() -> Unit {
-  println("  __  __                       ____  _     _      _     _ ")
-  println(" |  \\/  | ___   ___  _ __     / ___|| |__ (_) ___| | __| |")
-  println(" | |\\/| |/ _ \\ / _ \\| '_ \\ ___\\___ \\| '_ \\| |/ _ \\ |/ _` |")
-  println(" | |  | | (_) | (_) | | | |_____|__) | | | | |  __/ | (_| |")
-  println(" |_|  |_|\\___/ \\___/|_| |_|    |____/|_| |_|_|\\___|_|\\__,_|")
-  println("       -= ☾ M O O N S H I E L D · 月 盾 守 望 ☽ =-        ")
+  println("     _                    _       ____  _ _   ")
+  println("    / \\   ___  __ _  ___ (_)___  | __ )(_) |_ ")
+  println("   / _ \\ / _ \\/ _` |/ _ \\| / __| |  _ \\| | __|")
+  println("  / ___ \\  __/ (_| |  __/| \\__ \\ | |_) | | |_ ")
+  println(" /_/   \\_\\___|\\__, |\\___|/ |___/ |____/|_|\\__|")
+  println("              |___/    |__/                   ")
+  println("       -= ☾ A E G I S B I T · 神 盾 比 特 ☽ =-        ")
   println("   « Wasm-Native Attack Filter & AI Agent Security Guard »  ")
   println("----------------------------------------------------------")
 }
@@ -112,6 +113,6 @@ fn main {
   println("Total Risk  : " + safe_result.total_score.to_string() + " pts")
 
   println("\n----------------------------------------------------------")
-  println("  MoonShield Demonstration Completed.                     ")
+  println("  AegisBit Demonstration Completed.                       ")
   println("----------------------------------------------------------")
 }
