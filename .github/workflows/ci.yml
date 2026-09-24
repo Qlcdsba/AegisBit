@@ -1,0 +1,39 @@
+name: MoonShield CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install MoonBit toolchain
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: Show MoonBit version
+        run: |
+          moon version --all
+
+      - name: Code format check
+        run: |
+          moon fmt --check
+
+      - name: Static diagnostic check
+        run: |
+          moon check
+
+      - name: Run verification test suite
+        run: |
+          moon test
+
+      - name: Build WebAssembly target
+        run: |
+          moon build --target wasm

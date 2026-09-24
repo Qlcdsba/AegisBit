@@ -1,115 +1,128 @@
-# 🛡️ MoonShield (月盾)
+# MoonShield (月盾)
 
-> **MoonBit 国产基础软件生态开源大赛 (OSC 2026) / 黑客松参赛项目**  
-> 纯 MoonBit 原生开发的高性能、零依赖云原生 Web 应用防火墙 (WAF) 与 AI Agent 实时安全防护护栏 (Security Guardrail)。
-
----
-
-## 📌 项目背景与解决痛点
-
-随着国产基础软件生态（信创）与 WebAssembly (Wasm) 在云原生网关、边缘计算以及 AI Agent 领域的快速演进，嵌入式应用面临着两类严峻的安全威胁：
-
-1. **传统 Web 渗透与 WAF 混淆绕过**：
-   - 现有的 WAF 大多依赖庞大的 C/C++ 动态库或重量级 Python/Go 运行时，难以轻量化嵌入到 WebAssembly 边缘沙箱中。
-   - 攻击者常利用 URL 百分号二次编码、大小写交织（如 `uNiOn+sElEcT`）以及十六进制变形绕过常规关键词拦截。
-2. **AI Agent 时代的新型注入与越权提权**：
-   - 大模型在与外界环境交互调用系统工具（Tool Calls）时，极易受到 **Prompt Injection（提示词注入）**、**Jailbreak（越狱夺权）** 与 **Unsafe System Call（越权调用高危指令）** 的恶意劫持，导致企业敏感数据泄露或底层主机被攻陷。
-
-**MoonShield (月盾)** 应运而生。结合网络安全/网警实战防御体系，利用 MoonBit 语言**极小的编译体积（KB 级 Wasm）、极高的执行效率、严格的类型安全与代数数据类型模式匹配**，构建了一套兼具传统 Web 威胁阻断与 AI 智能体动态安全护栏的现代化云原生防御引擎。
+> **MoonBit 国产基础软件生态开源大赛 (OSC 2026) 参赛项目**  
+> 基于 MoonBit 实现的轻量级 Web 与 AI Agent 安全规则检测原型 (Security Rule Detector Prototype)。
 
 ---
 
-## ✨ 核心特性
+## 📌 项目定位与边界说明 (Scope & Limitations)
 
-- 🚀 **100% 纯 MoonBit 原生实现 (Zero External Dependencies)**：
-  - 核心编解码、模式匹配与评分判定完全自主可控，无需任何第三方外部 C/JS 动态库，天然免疫供应链依赖漏洞。
-- 🛡️ **双引擎立体纵深防御 (Dual-Engine Protection)**：
-  - **Web WAF 模块**：精准覆盖 SQL 注入（永真式、联合查询、破坏性语句）、XSS 跨站脚本、命令注入、目录遍历以及云原生 SSRF（云元数据探测、内网回环探测）。
-  - **AI Agent Guardrail 模块**：深度阻断 Prompt Injection 提示词覆写、DAN 越狱夺权、敏感 API 密钥诱导提取与非授权高危工具调用（如 `system.execute` / `file.delete`）。
-- ⚡ **深度 Payload 规范化与混淆规整 (Normalization)**：
-  - 内置 URL Percent-Encoding 状态机解码器与大小写统一归一化处理器，在特征匹配前彻底展开混淆载荷，精准化解攻击者的各类 WAF Evasion 绕过手段。
-- 📊 **动态风险评分与可配置阈值阻断 (Dynamic Risk Scoring)**：
-  - 区别于单一规则一票否决，MoonShield 采用规则多维累加评分机制（涵盖 Low, Medium, High, Critical 四级严重度），支持毫秒级综合研判并执行自动化脱敏与阻断。
-- 🌐 **天然全栈多目标适配 (Native & Wasm)**：
-  - 支持编译为本地原生二进制或体积轻巧的 WebAssembly 模块，可无缝内嵌至 Nginx/Envoy 边缘网关、Node.js 服务端以及浏览器前端沙箱中。
+### 1. 项目定位
+本项目为一个**实验性安全规则检测原型 (Experimental Prototype)**。核心目的在于探索利用国产编程语言 [MoonBit](https://www.moonbitlang.com) 的模式匹配与 WebAssembly (Wasm) 轻量化特性，在边缘或沙箱环境中实现基础的 Web 攻击特征识别与 AI Agent 提示词输入过滤。
+
+### 2. 能力边界与非生产级声明
+为确保工程诚实性与技术严谨性，特此明确本原型的能力边界：
+
+- **当前原型已具备的能力**：
+  - 基于状态机的基础 URL Percent-Decoding 解码与多重编码还原。
+  - 大小写归一化清洗，用于化解简单的 WAF 字符混淆。
+  - 基于字符串与规则特征的轻量模式匹配（覆盖 SQLi、XSS、Path Traversal、SSRF 以及基础 Prompt 注入）。
+  - 基于多维严重等级（Low, Medium, High, Critical）的累加风险评分判定机制。
+  - 具备全量单元测试与跨平台 WebAssembly 编译验证能力。
+
+- **与生产级工业 WAF / Guardrail 的差距（明确不具备的能力）**：
+  - **无复杂 AST 语法树解析**：当前为特征模式匹配，不包含针对 SQL 或 JavaScript 的完整词法语法解析器（AST Parser）。
+  - **无深度上下文与语义模型**：针对 Prompt Injection 采用关键词规则拦截，非基于大语言模型或向量嵌入的动态语义意图识别。
+  - **无网络协议栈与流量管理**：不包含 TLS 解密、TCP 连接池管理、分布式限流或防 CC/DDoS 模块。
+  - **仅供学习与原型验证**：不可直接作为高危生产环境的唯一安全边界。
 
 ---
 
-## 🏗️ 系统架构图
+## 🤖 人机协作与 AI 辅助申报 (Human-AI Collaboration)
+
+遵循开源大赛关于 AI 辅助编程规范与知识产权透明度要求，本项目在此清晰界定人机协作边界：
+
+1. **开发者主导职责**：
+   - 选题构思与网络安全专业背景对齐（聚焦 WebAssembly 边缘防护与 AI Agent 安全交互痛点）。
+   - 系统整体架构设计（Decoder 归一化 -> Rule 匹配 -> 阈值研判 -> Action 处置）。
+   - 规则库威胁模型制定与分值校准（SQLi, XSS, SSRF, Prompt Injection 等关键攻击载荷定义）。
+   - 核心功能验收、回归测试设计、阈值判定校准与工程质量把控。
+
+2. **AI 工具辅助范畴**：
+   - 使用 AI 编码辅助工具进行 MoonBit 语言特有语法（如 `UInt16` 字符处理、Block 结构）的适配与参考。
+   - 辅助生成重复性的单元测试用例脚手架与基础字符串匹配模板。
+   - 辅助整理与格式化 Markdown 技术说明文档。
+   - 移除了默认模版生成的冗余 Agent 配置文件，保证仓库依赖与工作流纯净。
+
+---
+
+## 🛠️ 模块架构
 
 ```
-+-------------------------------------------------------------------------+
-|                           Incoming Request                              |
-|       (HTTP Method, URI, Body / AI User Prompt / Tool Call JSON)        |
-+-------------------------------------------------------------------------+
-                                     |
-                                     v
-                 +---------------------------------------+
-                 |     Payload Normalizer & Decoder      |
-                 | (URL Hex Percent-Decode, Lowercase)   |
-                 +---------------------------------------+
-                                     |
-                                     v
-                 +---------------------------------------+
-                 |       MoonShield Rule Evaluator       |
-                 |  ┌─────────────────┬────────────────┐ |
-                 |  │   Web WAF Rules │  AI Guardrail  │ |
-                 |  │ (SQLi/XSS/SSRF) │ (Prompt/Tools) │ |
-                 |  └─────────────────┴────────────────┘ |
-                 +---------------------------------------+
-                                     |
-                                     v
-                 +---------------------------------------+
-                 |    Risk Score Accumulator & Policy    |
-                 +---------------------------------------+
-                    /                                 \
-                   /                                   \
-                  v                                     v
-         [Total Risk >= Threshold]             [Total Risk < Threshold]
-        ❌ Action: BLOCK & SANITIZE            ✅ Action: ALLOW & PASS
++-------------------------------------------------------------------+
+|                        输入数据 Payload                           |
+|       (HTTP Method, URI, Body / AI User Prompt / Tool Call)       |
++-------------------------------------------------------------------+
+                                  |
+                                  v
+                +-----------------------------------+
+                |       Payload Normalizer          |
+                | (URL Percent-Decode, Lowercase)   |
+                +-----------------------------------+
+                                  |
+                                  v
+                +-----------------------------------+
+                |     MoonShield Rule Evaluator     |
+                |   - Web 基础规则 (SQLi/XSS/SSRF)  |
+                |   - AI 护栏规则 (Prompt/ToolCall) |
+                +-----------------------------------+
+                                  |
+                                  v
+                +-----------------------------------+
+                |   Risk Accumulator & Threshold    |
+                +-----------------------------------+
+                   /                             \
+                  /                               \
+                 v                                 v
+        [Risk >= Threshold]               [Risk < Threshold]
+      ❌ Action: BLOCKED                  ✅ Action: ALLOWED
 ```
 
 ---
 
-## 🧪 边做边验与测试验证 (Test Coverage)
+## 🧪 验证与测试 (Verification & Testing)
 
-项目遵循严谨的工程化标准与测试驱动开发流程，内置覆盖各类攻击向量与正常业务流量的全量测试用例：
+项目坚持“边做边验”的开发流程，所有核心模块均配有确定性单元测试。
 
+### 1. 运行本地单元测试
 ```bash
-# 运行全部单元测试
 moon test
 ```
+*当前包含 10 组独立测试用例，覆盖编解码边界、各类攻击载荷及正常业务请求。*
 
-### 当前测试覆盖范围 (10/10 全部通过)：
-- [x] URL Percent 深度解码验证（SQLi 与 XSS 载荷）
-- [x] 大小写混淆与 WAF 绕过归一化校验
-- [x] SQL 注入攻击检测与阻断阈值评估
-- [x] XSS 跨站脚本载荷拦截
-- [x] 命令注入与敏感文件路径遍历探测
-- [x] SSRF 云元数据（169.254.169.254）与内网探测拦截
-- [x] AI Agent 提示词注入与越狱对抗拦截
-- [x] AI Agent 高危工具调用审计
-- [x] 正常合法业务流量零误报放行 (Zero False-Positive)
-- [x] 运行时自定义安全规则动态扩展
+### 2. 运行代码格式检查
+```bash
+moon fmt --check
+```
 
----
+### 3. 运行静态诊断检查
+```bash
+moon check
+```
 
-## 🚀 快速上手与使用
-
-### 1. 运行交互式命令行 DEMO
+### 4. 运行命令行演示 DEMO
 ```bash
 moon run cmd/main
 ```
-输出将直观呈现对恶意 SQL 注入流量、AI 提示词攻击以及正常业务请求的即时研判与阻断过程。
 
-### 2. 编译为 WebAssembly 目标
+### 5. 编译为 WebAssembly 目标
 ```bash
 moon build --target wasm
 ```
 
 ---
 
+## 🔄 持续集成 (Continuous Integration)
+
+仓库配置了真实的 GitHub Actions 自动化工作流 [`.github/workflows/ci.yml`](.github/workflows/ci.yml)，在每次代码推送到 `main` 分支或提交 Pull Request 时自动执行：
+- 环境安装与版本检查 (`moon version --all`)
+- 代码格式验证 (`moon fmt --check`)
+- 静态编译诊断 (`moon check`)
+- 全量单元测试 (`moon test`)
+- WebAssembly 目标编译构建 (`moon build --target wasm`)
+
+---
+
 ## 📜 许可证 (License)
 
-本项目采用 [Apache-2.0](LICENSE) 开源许可证。
-严格遵守 MoonBit OSC 2026 大赛规范。
+本项目采用 [Apache-2.0](LICENSE) 许可证开源。
