@@ -37,3 +37,7 @@ jobs:
       - name: Build WebAssembly target
         run: |
           moon build --target wasm
+
+      - name: Run CLI demonstration
+        run: |
+          moon run cmd/main
