@@ -1,7 +1,24 @@
-# MoonShield (月盾)
+```text
+  __  __                       ____  _     _      _     _ 
+ |  \/  | ___   ___  _ __     / ___|| |__ (_) ___| | __| |
+ | |\/| |/ _ \ / _ \| '_ \ ___\___ \| '_ \| |/ _ \ |/ _` |
+ | |  | | (_) | (_) | | | |_____|__) | | | | |  __/ | (_| |
+ |_|  |_|\___/ \___/|_| |_|    |____/|_| |_|_|\___|_|\__,_|
+       -= ☾ M O O N S H I E L D · 月 盾 守 望 ☽ =-
+   « Wasm-Native Attack Filter & AI Agent Security Guard »
+```
 
-> **MoonBit 国产基础软件生态开源大赛 (OSC 2026) 参赛项目**  
-> 基于 MoonBit 实现的轻量级 Web 与 AI Agent 安全规则检测原型 (Security Rule Detector Prototype)。
+<div align="center">
+
+[![MoonBit](https://img.shields.io/badge/Language-MoonBit-8A2BE2?style=for-the-badge&logo=webassembly)](https://www.moonbitlang.com)
+[![CI](https://img.shields.io/github/actions/workflow/status/Qlcdsba/moonshield/ci.yml?branch=main&style=for-the-badge&label=Build%20%26%20Test&logo=githubactions)](https://github.com/Qlcdsba/moonshield/actions)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](LICENSE)
+[![Target](https://img.shields.io/badge/Target-Wasm%20%7C%20Native-orange?style=for-the-badge)](https://www.moonbitlang.com)
+
+**MoonBit 国产基础软件生态开源大赛 (OSC 2026) 参赛作品**  
+*探索基于 WebAssembly 边缘沙箱与 AI 智能体调用的轻量级攻防过滤原型*
+
+</div>
 
 ---
 
