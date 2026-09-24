@@ -1,7 +1,7 @@
 // Comprehensive Verification Test Suite for AegisBit WAF & AI Guardrail Prototype
 
 ///|
-test "URL percent decoding for SQLi and XSS payloads" {
+test "Single-layer URL percent decoding" {
   let raw_sqli = "%27%20OR%20%271%27%3D%271"
   assert_eq(@aegisbit.url_decode(raw_sqli), "' OR '1'='1")
 
@@ -13,13 +13,41 @@ test "URL percent decoding for SQLi and XSS payloads" {
 }
 
 ///|
+test "Double-layer recursive URL decoding against WAF evasion" {
+  // Double-encoded SQLi: %2527 -> %27 -> '
+  let double_sqli = "%2527%2520OR%2520%25271%2527%253D%25271"
+  assert_eq(@aegisbit.url_decode_recursive(double_sqli), "' OR '1'='1")
+
+  // Double-encoded XSS: %253C -> %3C -> <
+  let double_xss = "%253Cscript%253Ealert(1)%253C%252Fscript%253E"
+  assert_eq(
+    @aegisbit.url_decode_recursive(double_xss),
+    "<script>alert(1)</script>",
+  )
+
+  // Double-encoded Path Traversal: %252e%252e%252f -> %2e%2e%2f -> ../
+  let double_path = "%252e%252e%252fetc%252fpasswd"
+  assert_eq(@aegisbit.url_decode_recursive(double_path), "../etc/passwd")
+}
+
+///|
+test "Malformed URL encoding input resiliency" {
+  // Verifies engine does not panic or crash on malformed percent sequences
+  assert_eq(@aegisbit.url_decode("%"), "%")
+  assert_eq(@aegisbit.url_decode("%2"), "%2")
+  assert_eq(@aegisbit.url_decode("%zz"), "%zz")
+  assert_eq(@aegisbit.url_decode("hello%20world%"), "hello world%")
+  assert_eq(@aegisbit.url_decode(""), "")
+}
+
+///|
 test "Payload normalization against WAF evasion techniques" {
   let mixed_case_sqli = "UnIoN+SeLeCt+NuLl%2C1"
   assert_eq(@aegisbit.normalize_payload(mixed_case_sqli), "union select null,1")
 
-  let mixed_xss = "%3CsCrIpt%3Ealert(document.cookie)%3C%2FsCrIpT%3E"
+  let double_mixed_xss = "%253CsCrIpt%253Ealert(document.cookie)%253C%252FsCrIpT%253E"
   assert_eq(
-    @aegisbit.normalize_payload(mixed_xss),
+    @aegisbit.normalize_payload(double_mixed_xss),
     "<script>alert(document.cookie)</script>",
   )
 }
@@ -27,24 +55,35 @@ test "Payload normalization against WAF evasion techniques" {
 ///|
 test "SQL Injection detection and default threshold blocking" {
   let engine = @aegisbit.WafEngine::new(score_threshold=50)
+
+  // Standard single-encoded SQLi
   let result = engine.inspect_http(
     "GET", "/api/users?id=1%27%20OR%20%271%27%3D%271", "",
   )
-
   assert_true(result.is_blocked)
   assert_true(result.total_score >= 50)
   assert_true(result.matches.length() > 0)
+
+  // Double-encoded SQLi bypass attempt
+  let double_res = engine.inspect_http(
+    "GET", "/api/users?id=1%2527%2520OR%2520%25271%2527%253D%25271", "",
+  )
+  assert_true(double_res.is_blocked)
 }
 
 ///|
-test "Cross-Site Scripting (XSS) detection" {
+test "Cross-Site Scripting (XSS) detection and double-encoding defense" {
   let engine = @aegisbit.WafEngine::new(score_threshold=50)
-  let result = engine.inspect_http(
+
+  let single_res = engine.inspect_http(
     "POST", "/comment", "body=%3Cscript%3Ealert(%22XSS%22)%3C/script%3E",
   )
+  assert_true(single_res.is_blocked)
 
-  assert_true(result.is_blocked)
-  assert_true(result.matches.length() > 0)
+  let double_res = engine.inspect_http(
+    "POST", "/comment", "body=%253Cscript%253Ealert(%22XSS%22)%253C%252Fscript%253E",
+  )
+  assert_true(double_res.is_blocked)
 }
 
 ///|
@@ -93,14 +132,49 @@ test "AI Unsafe Tool Call interception" {
 }
 
 ///|
-test "Safe business traffic zero false-positive pass" {
-  let engine = @aegisbit.WafEngine::new(score_threshold=50)
-  let result = engine.inspect_http(
-    "GET", "/api/products?category=cybersecurity&page=1", "{\"status\": \"active\"}",
-  )
+test "Strict threshold boundary testing (score < threshold vs score >= threshold)" {
+  // Test Case A: Exactly reaches threshold (50) -> BLOCKED
+  let engine_strict = @aegisbit.WafEngine::new(score_threshold=50)
+  let res_equal = engine_strict.inspect_http("GET", "/test?q=union+select", "")
+  assert_eq(res_equal.total_score, 50)
+  assert_true(res_equal.is_blocked)
 
-  assert_true(!result.is_blocked)
-  assert_eq(result.matches.length(), 0)
+  // Test Case B: Score is 35 (below 50) -> ALLOWED (monitored but not blocked)
+  let res_below = engine_strict.inspect_http("GET", "/test?dir=../public", "")
+  assert_eq(res_below.total_score, 35)
+  assert_true(!res_below.is_blocked)
+
+  // Test Case C: Multiple Low/Medium rules accumulating to cross boundary
+  // Line comment (15) + Dir traversal (35) = 50 -> triggers threshold
+  let res_accumulated = engine_strict.inspect_http(
+    "GET", "/test?path=../--", "",
+  )
+  assert_eq(res_accumulated.total_score, 50)
+  assert_true(res_accumulated.is_blocked)
+}
+
+///|
+test "Safe business traffic and benign samples pass without false positive" {
+  let engine = @aegisbit.WafEngine::new(score_threshold=50)
+
+  // Sample 1: Standard URL parameters with encoded characters
+  let res1 = engine.inspect_http(
+    "GET", "/search?q=c%2B%2B+data+structures&sort=desc", "",
+  )
+  assert_true(!res1.is_blocked)
+  assert_eq(res1.matches.length(), 0)
+
+  // Sample 2: Conversational text containing standard English words
+  let res2 = engine.inspect_agent_prompt(
+    "Please explain the history of the moon and artificial intelligence.",
+  )
+  assert_true(!res2.is_blocked)
+  assert_eq(res2.matches.length(), 0)
+
+  // Sample 3: Empty inputs
+  let res3 = engine.inspect_http("GET", "/", "")
+  assert_true(!res3.is_blocked)
+  assert_eq(res3.matches.length(), 0)
 }
 
 ///|

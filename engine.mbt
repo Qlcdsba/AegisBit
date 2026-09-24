@@ -1,4 +1,4 @@
-// MoonShield Core Inspection Engine Prototype
+// AegisBit Core Inspection Engine Prototype
 
 ///|
 /// WAF Security Engine holding active rules and inspection configuration.

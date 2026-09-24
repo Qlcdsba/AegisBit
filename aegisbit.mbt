@@ -1,4 +1,4 @@
-// MoonShield: Experimental WAF and AI Agent Security Rule Detector Prototype
+// AegisBit: Experimental WAF and AI Agent Security Rule Detector Prototype
 // Implemented in pure MoonBit.
 
 ///|

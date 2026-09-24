@@ -1,4 +1,4 @@
-// Preset Threat Detection Rules for MoonShield WAF & AI Guardrail Prototype
+// Preset Threat Detection Rules for AegisBit WAF & AI Guardrail Prototype
 
 ///|
 /// Returns the standard curated security rule set.

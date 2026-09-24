@@ -1,7 +1,7 @@
-// Payload Decoder & Normalizer for MoonShield Prototype
+// Payload Decoder & Normalizer for AegisBit Prototype
 
 ///|
-/// Decodes URL percent-encoded characters (e.g. %20 -> ' ', %27 -> '\'')
+/// Decodes a single layer of URL percent-encoded characters (e.g. %20 -> ' ', %27 -> '\'')
 pub fn url_decode(input : String) -> String {
   let sb = StringBuilder()
   let len = input.length()
@@ -37,6 +37,23 @@ pub fn url_decode(input : String) -> String {
 }
 
 ///|
+/// Recursively decodes multi-layer URL percent-encoded characters up to `max_depth` (default: 3).
+/// This defeats double-encoding or nested-encoding WAF evasion techniques (e.g. `%2527` -> `%27` -> `'`).
+pub fn url_decode_recursive(input : String, max_depth? : Int = 3) -> String {
+  let mut current = input
+  let mut depth = 0
+  while depth < max_depth {
+    let decoded = url_decode(current)
+    if decoded == current {
+      break
+    }
+    current = decoded
+    depth = depth + 1
+  }
+  current
+}
+
+///|
 /// Parses a single hex character (as UInt16 code) to integer value 0-15.
 fn parse_hex_digit(ch : UInt16) -> Int {
   let val = ch.to_int()
@@ -52,10 +69,10 @@ fn parse_hex_digit(ch : UInt16) -> Int {
 }
 
 ///|
-/// Normalizes payload by performing URL decoding and lowercasing.
-/// This foils common WAF evasion tricks using mixed casing (e.g. `uNiOn sElEcT`).
+/// Normalizes payload by performing recursive multi-layer URL decoding and lowercasing.
+/// This foils WAF evasion tricks using mixed casing (e.g. `uNiOn`) and double-encoding (e.g. `%2527`).
 pub fn normalize_payload(input : String) -> String {
-  let decoded = url_decode(input)
+  let decoded = url_decode_recursive(input, max_depth=3)
   decoded.to_lower()
 }
 

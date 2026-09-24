@@ -1,4 +1,4 @@
-name: MoonShield CI
+name: AegisBit CI
 
 on:
   push:
